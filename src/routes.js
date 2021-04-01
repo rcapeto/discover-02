@@ -140,9 +140,7 @@ const Job = {
       },
       delete(req, res) {
          const { id } = req.params;
-
          Job.data = Job.data.filter(job => String(job.id) !== id);
-         
          return res.redirect('/');
       }
    },
