@@ -140,7 +140,13 @@ const Job = {
       },
       delete(req, res) {
          const { id } = req.params;
+
+         const indexJob = Job.data.findIndex(job => String(job.id) === id);
+
+         if(indexJob >= 0) Job.data.splice(indexJob, 1);
+
          Job.data = Job.data.filter(job => String(job.id) !== id);
+
          return res.redirect('/');
       }
    },
