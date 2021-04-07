@@ -17,7 +17,8 @@ module.exports = {
    calculateBudget(valueHour, job) {
       return valueHour * job['total-hours'];
    },
-   hasJob(id) {
-      return Job.get().find(currentJob => String(currentJob.id) === id);
+   async hasJob(id) {
+      const jobs = await Job.get();
+      return jobs.find(currentJob => String(currentJob.id) === id);
    }
 }

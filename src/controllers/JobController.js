@@ -3,29 +3,23 @@ const Profile = require('../models/Profile');
 const JobsUtils = require('../utils/jobUtils');
 
 module.exports = {
-   save(req, res) {
-      const jobs = Job.get();
-
-      const lastId = jobs[jobs.length - 1]?.id || 1;
-
-      const job = {
-         ...req.body,
-         created_at: Date.now(),
-         id: lastId + 1,
-      }
+   async save(req, res) {
+      const job = {...req.body, created_at: Date.now() }
    
-      jobs.push(job);
+      await Job.create(job);
+
       return res.redirect('/');
    },
    create(req, res) {
       return res.render('job');
    },
-   show(req, res) {
-      const profile = Profile.get();
+
+   async show(req, res) {
+      const profile = await Profile.get();
 
       const { id } = req.params;
 
-      const job = JobsUtils.hasJob(id);
+      const job = await JobsUtils.hasJob(id);
      
       if(!job) {
          return res.status(400).json({ error: `Don't find Job with id: ${id}` });
@@ -35,33 +29,25 @@ module.exports = {
 
       return res.render('job-edit', { job });
    },
-   update(req, res) {
-      const jobs = Job.get();
-
+   
+   async update(req, res) {
       const { id } = req.params;
 
-      const job = JobsUtils.hasJob(id);
+      const job = await JobsUtils.hasJob(id);
      
       if(!job) {
          return res.status(400).json({ error: `Don't find Job with id: ${id}` });
       }
 
-      const updatedJob = {
-         ...job,
-         ...req.body,
-      }
+      const updatedJob = {...job,...req.body };
 
-      const jobIndex = jobs.findIndex(currentJob => String(currentJob.id) === id);
-
-      if(jobIndex >= 0) {
-         jobs[jobIndex] = updatedJob;
-      }
+      await Job.upgrade(updatedJob, id);
 
       return res.redirect(`/job/${id}`);
    },
-   delete(req, res) {
+   async delete(req, res) {
       const { id } = req.params;
-      Job.delete(id);
+      await Job.delete(id);
       return res.redirect('/');
    }
 }

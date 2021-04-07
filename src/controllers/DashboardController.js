@@ -1,18 +1,12 @@
 const Job = require('../models/Job');
 const Profile = require('../models/Profile');
 const JobsUtils = require('../utils/jobUtils');
-const ProfileUtils = require('../utils/profileUtils');
 
 module.exports = {
-   index(req, res) {
-      const jobs = Job.get();
-      const profile = Profile.get();
-
-      Profile.updated({
-         ...profile,
-         'value-hour': ProfileUtils.calculateValueHour(profile),
-      });
-
+   async index(req, res) {
+      const jobs = await Job.get();
+      const profile = await Profile.get();
+      
       const statusCount = {
          progress: 0,
          done: 0,
